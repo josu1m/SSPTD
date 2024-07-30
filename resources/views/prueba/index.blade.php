@@ -4,30 +4,27 @@
 
 
 @section('content')
+    <h2>PRUEBA</h2>
+    <div class="container mt-5">
+        <div class="card mx-auto" style="max-width: 48rem;">
+            <div class="card-body">
+                @include('prueba.components.grafico.venta')
 
-    @if (session('success'))
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-
-                let message = "{{ session('success') }}";
-                Swal.fire(message);
-
-            });
-        </script>
-    @endif
-
-    <div class="container-fluid px-4">
-        <h1 class="mt-4">Prueba</h1>
-        <div class="p-6 text-gray-900">
-            <x-grafico :title="$chartConfig['title']" :yAxisLabel="$chartConfig['yAxisLabel']" :xAxisLabel="$chartConfig['xAxisLabel']" :data="$chartConfig['data']"
-                :colors="$chartConfig['colors']" :width="$chartConfig['width']" :height="$chartConfig['height']" />
+            </div>
         </div>
+    </div>
+    <div class="container mt-5">
+        <div class="card mx-auto" style="max-width: 48rem;">
+            <div class="card-body">
+                @include('prueba.components.grafico.compra')
 
+            </div>
+        </div>
     </div>
 @endsection
 
 <style>
-    .mn{
+    .mn {
         background-color: rgb(96, 96, 134);
         width: 100%;
         height: 100%;

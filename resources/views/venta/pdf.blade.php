@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabla de Productos Avanzada</title>
+    <title>Reporte de abarrotes</title>
     <style>
         :root {
             padding: 0;
@@ -34,6 +34,26 @@
     <br/>
 
     @include('venta.components.cliente')
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+
+    @include('venta.components.proveedor')
+    {{-- @include('venta.components.producto') --}}
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    @include('venta.components.productodisponible')
+
+
+
 
 
 </body>

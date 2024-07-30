@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Compra;
+use App\Models\Venta;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PruebaController extends Controller
@@ -11,70 +14,61 @@ class PruebaController extends Controller
      */
     public function index()
     {
-        $data = [
-            ['name' => 'Alemania', 'value' => 16],
-            ['name' => 'Inglaterra', 'value' => 22],
-            ['name' => 'Escocia', 'value' => 15],
-            ['name' => 'Francia', 'value' => 23],
-            ['name' => 'Grecia', 'value' => 18],
-            ['name' => 'Italia', 'value' => 37],
-            ['name' => 'Portugal', 'value' => 10],
-            ['name' => 'Rusia', 'value' => 17],
-            ['name' => 'Perú', 'value' => 45],
+        $ventas = Venta::with(['comprobante', 'cliente.persona', 'user'])
+            ->where('estado', 1)
+            ->latest()
+            ->get();
 
-        ];
+        $datosGrafico = $ventas->groupBy(function ($venta) {
+            return $venta->created_at->format('Y-m-d');
+        })->map(function ($grupo) {
+            return [
+                'count' => $grupo->count(),
+                'vendedores' => $grupo->groupBy('user.name')
+                    ->map(function ($ventasVendedor) {
+                        return $ventasVendedor->count();
+                    })
+            ];
+        });
+        $compras = Compra::with('comprobante', 'proveedore.persona')
+        ->where('estado', 1)
+        ->latest()
+        ->get();
 
-        $colors = $this->getOrGenerateUniqueColors(array_column($data, 'name'));
+    $datosGrafico1 = $compras->groupBy(function($compra) {
+            return Carbon::parse($compra->created_at)->format('Y-m-d');
+        })
+        ->map(function ($grupo) {
+            return [
+                'count' => $grupo->count(),
+                'proveedores' => $grupo->groupBy('proveedore.persona.nombre')
+                    ->map->count()
+            ];
+        });
 
-        $chartConfig = [
-            'title' => 'Obesidad y Sobrepeso',
-            'yAxisLabel' => 'Tasa por ciento',
-            'xAxisLabel' => 'Países',
-            'data' => $data,
-            'colors' => $colors,
-            'width' => '100%',
-            'height' => '400px',
-        ];
-
-        return view('prueba.index', compact('chartConfig'));
+        return view('prueba.index', compact('datosGrafico','datosGrafico1'));
     }
-
-    private function getOrGenerateUniqueColors($countries)
+    public function reporteVentas()
     {
-        $colorFile = storage_path('app/unique_chart_colors.json');
+        $ventas = Venta::with(['comprobante', 'cliente.persona', 'user'])
+            ->where('estado', 1)
+            ->latest()
+            ->get();
 
-        if (file_exists($colorFile)) {
-            $savedColors = json_decode(file_get_contents($colorFile), true);
-        } else {
-            $savedColors = [];
-        }
+        $datosGrafico = $ventas->groupBy(function ($venta) {
+            return $venta->created_at->format('Y-m-d');
+        })->map(function ($grupo) {
+            return [
+                'count' => $grupo->count(),
+                'vendedores' => $grupo->groupBy('user.name')
+                    ->map(function ($ventasVendedor) {
+                        return $ventasVendedor->count();
+                    })
+            ];
+        });
 
-        $colors = [];
-        $newColors = false;
 
-        foreach ($countries as $country) {
-            if (!isset($savedColors[$country])) {
-                $color = $this->generateUniqueColor($savedColors);
-                $savedColors[$country] = $color;
-                $newColors = true;
-            }
-            $colors[] = $savedColors[$country];
-        }
-
-        if ($newColors) {
-            file_put_contents($colorFile, json_encode($savedColors));
-        }
-
-        return $colors;
-    }
-
-    private function generateUniqueColor($existingColors)
-    {
-        do {
-            $color = '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
-        } while (in_array($color, $existingColors));
-
-        return $color;
+        return view('venta.reporte', compact('datosGrafico'));
     }
 
 

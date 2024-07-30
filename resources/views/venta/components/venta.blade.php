@@ -1,49 +1,42 @@
 <div class="table-container custom-table-container">
+    <h2>CANTIDAD DE VENTAS POR </h2>
+
     <table class="custom-table">
         <thead>
             <tr class="custom-header-row">
-                <th class="custom-header">Comprobante</th>
-                <th class="custom-header">Cliente</th>
-                <th class="custom-header">Vendedor</th>
-                <th class="custom-header">Precio</th>
                 <th class="custom-header">Fecha</th>
+                <th class="custom-header">Total Ventas </th>
+                <th class="custom-header">Vendedor </th>
+                <th class="custom-header">Total Ventas por Vendedor
+                </th>
 
 
             </tr>
         </thead>
         <tbody class="custom-tbody">
-            @php
-                $montoTotalVentas = 0;
-            @endphp
-            @foreach ($ventas as $item)
-                @php
-                    $montoTotalVentas += $item->total;
-                @endphp
-                <tr class="custom-row">
-                    <td class="custom-cell comprobante-cell">
-                        <p class="comprobante-tipo">{{ $item->comprobante->tipo_comprobante }}: {{ $item->numero_comprobante }}</p>
-                    </td>
-                    <td class="custom-cell cliente-cell">
-                        <!--<p class="cliente-tipo">{{ ucfirst($item->cliente->persona->tipo_persona) }}</p>-->
-                        <p class="cliente-razon-social">{{ $item->cliente->persona->razon_social }}</p>
-                    </td>
-                    <td class="custom-cell vendedor-cell">
-                        {{ $item->user->name }}
-                    </td>
-                    <td class="custom-cell total-cell">
-                        ${{ $item->total }}
-                    </td>
-                    <td class="custom-cell cliente-cell">
-                        {{ $item->created_at->format('d/m/Y') }}
-                    </td>
-                </tr>
+            @foreach ($datosTabla as $data)
+                @foreach ($data['vendedores'] as $vendedor)
+                    <tr class="custom-row">
+                        @if ($loop->first)
+                            <td rowspan="{{ count($data['vendedores']) }}" class="custom-cell comprobante-cell">
+                                {{ $data['fecha'] }}</td>
+                            <td rowspan="{{ count($data['vendedores']) }}" class="custom-cell comprobante-cell">
+                                {{ $data['total_ventas'] }}</td>
+                        @endif
+                        <td class="custom-cell total-cell">
+                            {{ $vendedor['nombre_vendedor'] }} </td>
+                        <td class="custom-cell cliente-cell">
+                            {{ $vendedor['total_ventas'] }} </td>
+                    </tr>
+                @endforeach
             @endforeach
+
         </tbody>
         <tfoot>
             <tr class="total-row custom-total-row">
-                <td colspan="3" class="right-align custom-total-label">MONTO TOTAL</td>
+                <td colspan="3" class="right-align custom-total-label">VENTA TOTAL</td>
                 <td class="right-align custom-total-amount">
-                    <p class="text-lg font-bold text-white custom-total-text">${{ number_format($montoTotalVentas, 2) }}</p>
+                    {{ $totalVentas }}
                 </td>
             </tr>
         </tfoot>

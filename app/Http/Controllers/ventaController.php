@@ -6,6 +6,7 @@ use App\Http\Requests\StoreVentaRequest;
 use App\Models\Cliente;
 use App\Models\Comprobante;
 use App\Models\Producto;
+use App\Models\Proveedore;
 use App\Models\Venta;
 use Exception;
 use Illuminate\Http\Request;
@@ -15,18 +16,67 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ventaController extends Controller
 {
+    private function obtenerDatosProductoDisponible()
+    {
+        $productos = Producto::with(['categorias.caracteristica', 'marca.caracteristica', 'presentacione.caracteristica'])->latest()->get();
+
+        return $productos->map(function ($producto) {
+            return [
+                'nombre' => $producto->nombre,
+                'stock' => $producto->stock,
+                'fecha_vencimiento'=>$producto->fecha_vencimiento
+            ];
+        });
+    }
+
 
     public function ventaPdf()
     {
+
+
+        $ventas = Venta::with(['comprobante', 'cliente.persona', 'user'])
+            ->where('estado', 1)
+            ->latest()
+            ->get();
+        $totalVentas = $ventas->count();
+        $clientes = Cliente::with('persona.documento')->get();
+        $totalClientes = $clientes->count();
+
+        $proveedores = Proveedore::with('persona.documento')->get();
+        $totalProveedor = $proveedores->count();
+        $productos = Producto::with(['categorias.caracteristica', 'marca.caracteristica', 'presentacione.caracteristica'])->latest()->get();
+        $totalProducto = $productos->count();
+        $totalStock = $productos->sum('stock');
+
+
         $ventas = Venta::with(['comprobante', 'cliente.persona', 'user'])
             ->where('estado', 1)
             ->latest()
             ->get();
 
-        $clientes = Cliente::with('persona.documento')->get();
-        $totalClientes = $clientes->count();
+        // Agrupar ventas por fecha
+        $datosPorFecha = $ventas->groupBy(function ($venta) {
+            return $venta->created_at->format('Y-m-d');
+        });
+        // Procesar datos para la tabla
+        $datosTabla = $datosPorFecha->map(function ($ventasPorFecha) {
+            return [
+                'fecha' => $ventasPorFecha->first()->created_at->format('Y-m-d'),
+                'total_ventas' => $ventasPorFecha->count(),
+                'vendedores' => $ventasPorFecha->groupBy('user.name')
+                    ->map(function ($ventasVendedor) {
+                        return [
+                            'nombre_vendedor' => $ventasVendedor->first()->user->name,
+                            'total_ventas' => $ventasVendedor->count(),
+                        ];
+                    })->values(),
+            ];
+        })->values();
+        $datosProductos = $this->obtenerDatosProductoDisponible();
 
-        $pdf = Pdf::loadView('venta.pdf', compact('ventas', 'clientes','totalClientes'));
+
+
+        $pdf = Pdf::loadView('venta.pdf', compact('ventas', 'totalVentas', 'clientes', 'totalClientes', 'proveedores', 'totalProveedor', 'productos', 'totalProducto', 'datosTabla', 'datosProductos','totalStock'));
         return $pdf->stream('ventas.pdf');
     }
     function __construct()

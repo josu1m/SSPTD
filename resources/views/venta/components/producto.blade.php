@@ -1,38 +1,50 @@
 <div class="table-container custom-table-container">
-    <h2>CANTIDAD TOTAL DE CLIENTES</h2>
-
     <table class="custom-table">
         <thead>
             <tr class="custom-header-row">
+                <th class="custom-header">Código</th>
                 <th class="custom-header">Nombre</th>
-                <th class="custom-header">Dirección</th>
-                <th class="custom-header">Documento</th>
+                <th class="custom-header">Marca</th>
+                <th class="custom-header">Categorías</th>
             </tr>
         </thead>
         <tbody class="custom-tbody">
-            @foreach ($clientes as $item)
+            @foreach ($productos as $item)
                 <tr class="custom-row">
                     <td class="custom-cell comprobante-cell">
                         <p class="comprobante-tipo">
-                            {{ $item->persona->razon_social }}
+                            {{ $item->codigo }}
+                        </p>
+                    </td>
+                    <td class="custom-cell comprobante-cell">
+                        <p class="comprobante-tipo">
+                            {{$item->nombre}}
                         </p>
                     </td>
                     <td class="custom-cell cliente-cell">
                         <p class="cliente-razon-social">
-                            {{ $item->persona->direccion }}
+                            {{ $item->marca->caracteristica->nombre }}
                         </p>
                     </td>
-                    <td class="custom-cell vendedor-cell">{{ $item->persona->documento->tipo_documento }}:
-                        {{ $item->persona->numero_documento }}</p>
+                    <td class="custom-cell vendedor-cell">
+                        @foreach ($item->categorias as $category)
+                            <div class="container" style="font-size: small;">
+                                <div class="row">
+                                    <span
+                                        class="m-1 rounded-pill p-1 bg-secondary text-white text-center">{{ $category->caracteristica->nombre }}</span>
+                                </div>
+                            </div>
+                        @endforeach
+                        </p>
                     </td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr class="total-row custom-total-row">
-                <td colspan="2" class="right-align custom-total-label">TOTAL CLIENTES</td>
+                <td colspan="3" class="right-align custom-total-label">TOTAL PRODUCTO</td>
                 <td class="right-align custom-total-amount" style="text-align: center;">
-                    {{ $totalClientes }}
+                    {{ $totalProducto }}
 
                 </td>
             </tr>

@@ -1,38 +1,39 @@
 <div class="table-container custom-table-container">
-    <h2>CANTIDAD TOTAL DE CLIENTES</h2>
+    <h2>CANTIDAD DE PROVEEDORES DE LA TIENDA</h2>
 
     <table class="custom-table">
         <thead>
             <tr class="custom-header-row">
                 <th class="custom-header">Nombre</th>
                 <th class="custom-header">Dirección</th>
-                <th class="custom-header">Documento</th>
+                <th class="custom-header">Tipo de persona</th>
             </tr>
         </thead>
         <tbody class="custom-tbody">
-            @foreach ($clientes as $item)
-                <tr class="custom-row">
+            @foreach ($proveedores as $item)
+            <tr class="custom-row">
                     <td class="custom-cell comprobante-cell">
                         <p class="comprobante-tipo">
-                            {{ $item->persona->razon_social }}
+                            {{$item->persona->razon_social}}
                         </p>
                     </td>
                     <td class="custom-cell cliente-cell">
                         <p class="cliente-razon-social">
-                            {{ $item->persona->direccion }}
+                            {{$item->persona->direccion}}
                         </p>
                     </td>
-                    <td class="custom-cell vendedor-cell">{{ $item->persona->documento->tipo_documento }}:
-                        {{ $item->persona->numero_documento }}</p>
+                    <td class="custom-cell vendedor-cell">
+                        {{$item->persona->tipo_persona}}
+                    </p>
                     </td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr class="total-row custom-total-row">
-                <td colspan="2" class="right-align custom-total-label">TOTAL CLIENTES</td>
+                <td colspan="2" class="right-align custom-total-label">TOTAL PROVEEDORES</td>
                 <td class="right-align custom-total-amount" style="text-align: center;">
-                    {{ $totalClientes }}
+                    {{ $totalProveedor }}
 
                 </td>
             </tr>

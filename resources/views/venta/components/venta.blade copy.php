@@ -1,39 +1,56 @@
 <div class="table-container custom-table-container">
-    <h2>CANTIDAD TOTAL DE CLIENTES</h2>
-
     <table class="custom-table">
         <thead>
             <tr class="custom-header-row">
-                <th class="custom-header">Nombre</th>
-                <th class="custom-header">Dirección</th>
-                <th class="custom-header">Documento</th>
+                <th class="custom-header">Fecha</th>
+                <th class="custom-header">Total Ventas </th>
+                <th class="custom-header">Total Ventas por Vendedor
+                </th>
+
+
             </tr>
         </thead>
         <tbody class="custom-tbody">
-            @foreach ($clientes as $item)
+            @php
+                $montoTotalVentas = 0;
+            @endphp
+            @foreach ($ventas as $item)
+                @php
+                    $montoTotalVentas += $item->total;
+                @endphp
                 <tr class="custom-row">
                     <td class="custom-cell comprobante-cell">
-                        <p class="comprobante-tipo">
-                            {{ $item->persona->razon_social }}
-                        </p>
+                        <p class="comprobante-tipo">{{ $item->comprobante->tipo_comprobante }}:
+                            {{ $item->numero_comprobante }}</p>
                     </td>
                     <td class="custom-cell cliente-cell">
-                        <p class="cliente-razon-social">
-                            {{ $item->persona->direccion }}
-                        </p>
+                        <!--<p class="cliente-tipo">{{ ucfirst($item->cliente->persona->tipo_persona) }}</p>-->
+                        <p class="cliente-razon-social">{{ $item->cliente->persona->razon_social }}</p>
                     </td>
-                    <td class="custom-cell vendedor-cell">{{ $item->persona->documento->tipo_documento }}:
-                        {{ $item->persona->numero_documento }}</p>
+                    <td class="custom-cell vendedor-cell">
+                        {{ $item->user->name }}
+                    </td>
+                    <td class="custom-cell total-cell">
+                        ${{ $item->total }}
+                    </td>
+                    <td class="custom-cell cliente-cell">
+                        {{ $item->created_at->format('d/m/Y') }}
                     </td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr class="total-row custom-total-row">
-                <td colspan="2" class="right-align custom-total-label">TOTAL CLIENTES</td>
-                <td class="right-align custom-total-amount" style="text-align: center;">
-                    {{ $totalClientes }}
-
+                <td colspan="3" class="right-align custom-total-label">MONTO TOTAL</td>
+                <td class="right-align custom-total-amount">
+                    <p class="text-lg font-bold text-white custom-total-text">${{ number_format($montoTotalVentas, 2) }}
+                    </p>
+                </td>
+            </tr>
+            <tr class="total-row custom-total-row">
+                <td colspan="3" class="right-align custom-total-label">TOTAL VENTAS</td>
+                <td class="right-align custom-total-amount">
+                    <p class="text-lg font-bold text-white custom-total-text">{{ $totalVentas }}</p>
                 </td>
             </tr>
         </tfoot>
@@ -123,8 +140,7 @@
     }
 
     .custom-total-amount {
-        background-color: #abe2c2;
-        border-radius: 10px
+        background-color: #2ecc71;
     }
 
     .custom-total-text {

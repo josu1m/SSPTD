@@ -234,6 +234,49 @@
                 </div>
             </div>
 
+            {{-- @include('panel.components.reporte.venta') --}}
+
+
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                @include('panel.components.reporte.venta')
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                @include('panel.components.reporte.cliente')
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                @include('panel.components.reporte.productodisponible')
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="{{ route('venta.pdf') }}" class="btn btn-primary" target="_blank">Generar
+                                    reporte en pdf</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
         </div>
     </div>
 @endsection
